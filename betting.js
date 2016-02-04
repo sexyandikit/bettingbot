@@ -1,11 +1,8 @@
-/// This bot its perfect to follow trains. It uses martingale system but betting on the last colour 
-
-///---------------CONFING-------------------///
 var initialBetAmount = 5;
 var mode = 'martingale'; // 'martingale' or 'anti-martingale'
 var betColor = 'red'; // color what is starting betting,  red or black
 
-var all_bets = 0, bets_won = 0, bets_lost = 0, red_bets = 0, a = "7656", black_bets = 0; 
+var all_bets = 0, bets_won = 0, bets_lost = 0, red_bets = 0, a = "7656", black_bets = 0; loss_streak = 0;
 
 get_web(); 
 b="1198"; 
@@ -38,15 +35,24 @@ function rolled() {
 
 function antiMartingale() {
     currentBetAmount = wonLastRoll() ? 2 * currentBetAmount : initialBetAmount; 
-    doShit(); 
+    chooseColor(); 
 }
 
 function martingale() {
     currentBetAmount = wonLastRoll() ? initialBetAmount : 2 * currentBetAmount; 
-    doShit(); 
+    chooseColor(); 
 }
-function doShit() {
-    all_bets = bets_won+bets_lost; 
+function chooseColor() {
+    all_bets = bets_won + bets_lost;
+    if(loss_streak >= 6) { 
+        if(lastRollColor == 'red') {
+            betColor = 'black'; 
+        } else if(lastRollColor == 'black') {
+            betColor = 'red'; 
+        } else if(lastRollColor == 'green') {
+            betColor = lastBetColor; 
+        }
+    }   
     if(lastRollColor == 'red') {
         betColor = 'red'; 
     } else if(lastRollColor == 'black') {
@@ -54,7 +60,7 @@ function doShit() {
     } else if(lastRollColor == 'green') {
         betColor = lastBetColor; 
     }
-    wonLastRoll() ? (bets_won++) : bets_lost++; 
+    wonLastRoll() ? (bets_won++, loss_streak = 0;) : (bets_lost++, loss_streak++); 
 }
 
 function get_web() {
@@ -148,7 +154,7 @@ function getColor(a) {
 }
 
 function wonLastRoll() {
-    return lastBetColor?lastRollColor === lastBetColor:null
+    return lastBetColor ? lastRollColor === lastBetColor : null
 }
 
 var currentBetAmount = initialBetAmount, shit = 51, currentRollNumber = 1, lastStatus, lastBetColor, lastRollColor, $balance = $("#balance"), $betAmountInput = $("#betAmount"), $statusBar = $(".progress #banner"), $redButton = $("#panel1-7 .betButton"), $blackButton = $("#panel8-14 .betButton"), c = "1464", d = "24151", refreshIntervalId=setInterval(tick, 500); 
