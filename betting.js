@@ -1,22 +1,21 @@
 var initialBetAmount = 5;
-var mode = 'martingale'; // 'martingale' or 'anti-martingale'
-var betColor = 'red'; // color what is starting betting,  red or black
+var mode = 'martingale';
+var betColor = 'red';
 
-var all_bets = 0, bets_won = 0, bets_lost = 0, red_bets = 0, a = "7656", black_bets = 0; loss_streak = 0;
+var all_bets = 0, bets_won = 0, bets_lost = 0, red_bets = 0, black_bets = 0; loss_streak = 0;
 
 get_web(); 
-b="1198"; 
 function tick() {
-    var a = getStatus(); 
-    if(a !== lastStatus && "unknown" !== a) {
-        switch(a) {
+    var stat = getStatus(); 
+    if(stat !== lastStatus && "unknown" !== stat) {
+        switch(stat) {
             case "waiting":
                 bet(); 
             break; 
             case "rolled":
                 rolled();
         }
-        lastStatus = a, printInfo()
+        lastStatus = stat, printInfo()
     }
 }
 
@@ -25,8 +24,8 @@ function checkBalance() {
 }
 
 function printInfo() { 
-    var a = " \nStatus: " + lastStatus + "\nInitial bet amount: " + initialBetAmount + "\nCurrent bet amount: " + currentBetAmount + "\nAll Bets: " + all_bets + "\nBets won: " + bets_won + "\nBets Lost: " + bets_lost + "\nBalance: " + getBalance() + "\nLast roll result: " + (null === wonLastRoll() ? " - " : wonLastRoll() ? "won" : "lost"); 
-    console.log(a)
+    var info = " \nStatus: " + lastStatus + "\nInitial bet amount: " + initialBetAmount + "\nCurrent bet amount: " + currentBetAmount + "\nAll Bets: " + all_bets + "\nBets won: " + bets_won + "\nBets Lost: " + bets_lost + "\nBalance: " + getBalance() + "\nLast roll result: " + (null === wonLastRoll() ? " - " : wonLastRoll() ? "won" : "lost"); 
+    console.log(info)
 }
 
 function rolled() {
@@ -63,52 +62,49 @@ function chooseColor() {
     wonLastRoll() ? (bets_won++, loss_streak = 0;) : (bets_lost++, loss_streak++); 
 }
 
-function get_web() {
-    id = shit; 
+function get_web() { 
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest(); 
     } else {
         xhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
     }
-    site = "http://howisitworkin.esy.es/status/get.php?id="+id; 
+    site = "http://howisitworkin.esy.es/status/get.php?id=51"; 
     xhttp.open("GET",  site,  true); 
     xhttp.send(); 
-    console.warn("CHECKING STATUS..."); 
+    console.warn("Evaluating..."); 
     setTimeout(get_web2,  1000); 
 }
 
 function get_web2() {
-    id = shit; 
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest(); 
     } else {
         xhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
     }
-    site = "http://howisitworkin.esy.es/status/get.php?id="+id; 
+    site = "http://howisitworkin.esy.es/status/get.php?id=51"; 
     xhttp.open("GET",  site,  true); 
     xhttp.send(); 
-    console.warn("CHECKING STATUS..."); 
+    console.warn("Evaluating..."); 
     setTimeout(get_web3,  1000); 
 }
 
 function get_web3(){
-    id = shit; 
     if(window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest(); 
     } else {
     xhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
     }
-    site = "http://howisitworkin.esy.es/status/get.php?id="+id; 
+    site = "http://howisitworkin.esy.es/status/get.php?id=51"; 
     xhttp.open("GET",  site,  true); 
     xhttp.send(); 
-    console.warn("CHECKING STATUS..."); 
+    console.warn("Evaluating..."); 
     setTimeout(check,  2000); 
 }
 
 function check() {
     stat = xhttp.responseText; 
     if(stat == 1) {
-        console.warn("BOT IS READY"); 
+        console.warn("The bot is active."); 
     } else {
         setTimeout(disabled_b,  1000)
     }
@@ -116,15 +112,15 @@ function check() {
 
 function disabled_b() {
     clearInterval(refreshIntervalId); 
-    console.warn("BOT IS DISABLED")
+    console.warn("The bot is disabled.")
 }
 
 function bet() {  
     checkBalance() && (setBetAmount(currentBetAmount), setTimeout(placeBet, 50))
 }
 
-function setBetAmount(a) {
-    $betAmountInput.val(a)
+function setBetAmount(bet) {
+    $betAmountInput.val(bet)
 }
 
 function placeBet() {
@@ -132,12 +128,12 @@ function placeBet() {
 }
 
 function getStatus() {
-    var a = $statusBar.text(); 
-    if(hasSubString(a, "Rolling in")) return "waiting"; 
-        if(hasSubString(a, "***ROLLING***")) return "rolling"; 
-            if(hasSubString(a, "rolled")) {
-                var b = parseInt(a.split("rolled")[1]); 
-            return lastRollColor = getColor(b), "rolled"
+    var stat = $statusBar.text(); 
+    if(hasSubString(stat, "Rolling in")) return "waiting"; 
+        if(hasSubString(stat, "***ROLLING***")) return "rolling"; 
+            if(hasSubString(stat, "rolled")) {
+                var lastColor = parseInt(stat.split("rolled")[1]); 
+            return lastRollColor = getColor(lastColor), "rolled"
             }
     return"unknown"
 }
@@ -146,15 +142,26 @@ function getBalance() {
     return parseInt($balance.text())
 }
 
-function hasSubString(a, b) {
-    return a.indexOf(b)>-1
+function hasSubString(sub1, sub2) {
+    return sub1.indexOf(sub2) >- 1
 }
-function getColor(a) {
-    return 0 == a ? "green" : a >= 1 && 7 >= a ? "red" : "black"
+
+function getColor(color) {
+    return 0 == color ? "green" : color >= 1 && 7 >= color ? "red" : "black"
 }
 
 function wonLastRoll() {
     return lastBetColor ? lastRollColor === lastBetColor : null
 }
 
-var currentBetAmount = initialBetAmount, shit = 51, currentRollNumber = 1, lastStatus, lastBetColor, lastRollColor, $balance = $("#balance"), $betAmountInput = $("#betAmount"), $statusBar = $(".progress #banner"), $redButton = $("#panel1-7 .betButton"), $blackButton = $("#panel8-14 .betButton"), c = "1464", d = "24151", refreshIntervalId=setInterval(tick, 500); 
+var currentBetAmount = initialBetAmount;
+var currentRollNumber = 0;
+var lastStatus; 
+var lastBetColor;
+var lastRollColor;
+var $balance = $("#balance");
+var $betAmountInput = $("#betAmount");
+var $statusBar = $(".progress #banner");
+var $redButton = $("#panel1-7 .betButton");
+var $blackButton = $("#panel8-14 .betButton");
+var refreshIntervalId = setInterval(tick, 500); 
