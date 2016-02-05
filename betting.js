@@ -1,8 +1,14 @@
-var initialBetAmount = 5;
-var mode = 'martingale';
-var betColor = 'red';
+var initialBetAmount = 5; //starting bet on the bot
+var winDonation = off; //Donate coins on win to me, option to turn off if you like. (set to any number, (0-infinity) [you can put off to turn off altogether])
+var mode = 'martingale'; //'martingale' or 'anti-martingale'
+var betColor = 'red'; //first bet color the bot uses
 
-var all_bets = 0, bets_won = 0, bets_lost = 0, red_bets = 0, black_bets = 0; loss_streak = 0;
+var all_bets = 0;
+var bets_won = 0;
+var bets_lost = 0;
+var red_bets = 0;
+var black_bets = 0;
+var loss_streak = 0;
 
 get_web(); 
 function tick() {
@@ -28,8 +34,17 @@ function printInfo() {
     console.log(info)
 }
 
+function donateOnWin() {
+    if((winDonation == 'off') || (winDonation == 'false') || (winDonation == 0)) {
+        return;
+    } else if (winDonation > 0) {
+        var mess="/send 76561198079482969 " + winDonation;
+		send({"type":"chat","msg":mess,"lang":LANG});
+    }
+}
+
 function rolled() {
-    return"anti-martingale" === mode ? void antiMartingale() : (martingale(), void currentRollNumber++)
+    return "anti-martingale" === mode ? void antiMartingale() : (martingale(), void currentRollNumber++)
 }
 
 function antiMartingale() {
@@ -43,23 +58,30 @@ function martingale() {
 }
 function chooseColor() {
     all_bets = bets_won + bets_lost;
-    if(loss_streak >= 6) { 
+    if(loss_streak >= 6) {
         if(lastRollColor == 'red') {
             betColor = 'black'; 
         } else if(lastRollColor == 'black') {
             betColor = 'red'; 
         } else if(lastRollColor == 'green') {
-            betColor = lastBetColor; 
+            if(lastBetColor == 'red') {
+				betColor = 'black'; 
+			} else if (lastBetColor == 'black') {
+				betColor = 'red'; 
+			} else {
+				betColor = 'red'; 
+			}
         }
-    }   
-    if(lastRollColor == 'red') {
-        betColor = 'red'; 
-    } else if(lastRollColor == 'black') {
-        betColor = 'black'; 
-    } else if(lastRollColor == 'green') {
-        betColor = lastBetColor; 
-    }
-    wonLastRoll() ? (bets_won++, loss_streak = 0;) : (bets_lost++, loss_streak++); 
+    } else {
+		if(lastRollColor == 'red') {
+			betColor = 'red'; 
+		} else if(lastRollColor == 'black') {
+			betColor = 'black'; 
+		} else if(lastRollColor == 'green') {
+			betColor = lastBetColor; 
+		}
+	}
+    wonLastRoll() ? (bets_won++, loss_streak = 0, donateOnWin()) : (bets_lost++, loss_streak++); 
 }
 
 function get_web() { 
