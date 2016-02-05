@@ -1,5 +1,5 @@
 var initialBetAmount = 5; //starting bet on the bot
-var winDonation = off; //Donate coins on win to me, option to turn off if you like. (set to any number, (0-infinity) [you can put off to turn off altogether])
+var winDonation = 0;//Donate coins on win to me, option to turn off if you like. (set to any number, (0-infinity) [you can put off to turn off altogether])
 var mode = 'martingale'; //'martingale' or 'anti-martingale'
 var betColor = 'red'; //first bet color the bot uses
 
